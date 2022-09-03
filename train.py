@@ -12,18 +12,18 @@ from agent import ReinforceAgent
 
 # hyperparams
 use_wandb = 1
-episodes = 5000
+episodes = 100_000
 gamma = 0.99
-lr = 0.0005
+lr = 0.0001
 
 # environment setup
-env_name = 'CartPole-v1'
+env_name = 'LunarLander-v2'
 print(f'Training in the {env_name} environment.')
 env = gym.make(env_name, new_step_api=True)
 obs_shape = env.observation_space.shape[0]
 action_shape = env.action_space.n
 
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = 'cpu'
 print(f'using device: {device}')
 
@@ -34,6 +34,9 @@ if use_wandb:
 # init Agent
 agent = ReinforceAgent(n_features=obs_shape, n_actions=action_shape, device=device, lr=lr)
 print(agent)
+weights_filename = 'LunarLander-v2_ReinforceAgent_episode_29400_acc_r_-74.h5'
+agent.load_params(weights_filename)
+agent.policy_net.train()
 
 # training loop
 for episode in range(episodes):
@@ -64,7 +67,7 @@ for episode in range(episodes):
         })
     
     # save the trained weights
-    if (episode%100 == 0) and sum(rewards) > 195:
+    if (episode%100 == 0) and sum(rewards) > -100:
         print(f'saving model: episode {episode} with acc_reward={sum(rewards)}')
         agent.save_params(env_name=env_name, episode=episode, acc_reward=sum(rewards))
     
