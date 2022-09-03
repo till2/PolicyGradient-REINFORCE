@@ -3,7 +3,7 @@
 ##### <div align="center">![cartpole_render](https://user-images.githubusercontent.com/89709351/188269475-96a79bd7-c6a4-4c04-a21f-2a482cea0c0a.gif) A trained agent balancing an inverted pole on a moving cart.
 </div>
 
-##### <div align="center">![lunar_lander_render](https://user-images.githubusercontent.com/89709351/188278770-d96f3b50-c34b-41da-b7e5-7931102cc23d.gif) <br/>A trained agent controlling boosters to land a rocket.
+##### <div align="center">![lunar_lander_render](https://user-images.githubusercontent.com/89709351/188278770-d96f3b50-c34b-41da-b7e5-7931102cc23d.gif) <br/>A trained agent controlling boosters to land a spaceship.
 </div>
 
 
