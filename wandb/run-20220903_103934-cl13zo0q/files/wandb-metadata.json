@@ -1,0 +1,18 @@
+{
+    "os": "Linux-5.15.0-47-generic-x86_64-with-glibc2.35",
+    "python": "3.10.4",
+    "heartbeatAt": "2022-09-03T08:39:35.335130",
+    "startedAt": "2022-09-03T08:39:34.361418",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090 Ti",
+    "gpu_count": 1,
+    "cpu_count": 24,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/till/Desktop/GitHub/Better_Reinforce/train.py",
+    "codePath": "train.py",
+    "host": "z",
+    "username": "till",
+    "executable": "/usr/bin/python3.10"
+}
