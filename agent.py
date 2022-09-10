@@ -35,9 +35,9 @@ class ReinforceAgent(nn.Module):
         out = self.forward(x)
         pd = torch.distributions.Categorical(logits=out)
         action = pd.sample()
-        return (action[0].detach().numpy(), pd.log_prob(action))
+        return (action[0].cpu().detach().numpy(), pd.log_prob(action))
     
-    def get_loss(self, rewards, action_log_probs, gamma):
+    def get_loss(self, rewards, action_log_probs, gamma, device):
         """
         Calculates the loss efficiently.
         """
@@ -48,7 +48,7 @@ class ReinforceAgent(nn.Module):
         for t in reversed(range(T)):
             future_return = rewards[t] + gamma * future_return
             returns[t] = future_return
-        returns = torch.Tensor(returns)
+        returns = torch.Tensor(returns).to(device)
 
         action_log_probs = torch.stack(action_log_probs)
         loss = - action_log_probs * returns
@@ -56,12 +56,18 @@ class ReinforceAgent(nn.Module):
         return loss
     
     def update_policy_net(self, loss):
+        """
+        Updates the parameters of the policy network according to the given loss.
+        """
         self.optim.zero_grad()
         loss.backward()
         # torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), 1) # clip gradient
         self.optim.step()
     
     def save_params(self, env_name=None, episode=None, acc_reward=None):
+        """
+        Saves the parameters of the agents policy network as a .h5 file.
+        """
         weights_path = 'weights'
         if not os.path.exists(weights_path):
             os.makedirs(weights_path)
@@ -69,6 +75,9 @@ class ReinforceAgent(nn.Module):
         torch.save(self.policy_net.state_dict(), path)
     
     def load_params(self, weights_filename):
+        """
+        Loads parameters in a specified path to the agents policy network and sets eval mode.
+        """
         self.policy_net.load_state_dict(torch.load(os.path.join('weights', weights_filename)))
         self.policy_net.eval()
         print('using weights:', weights_filename)

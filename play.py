@@ -1,4 +1,6 @@
-# PG-Reinforce showcase
+# PG showcase
+
+# To play:
 # python play.py --weights LunarLander-v2_ReinforceAgent_episode_46100_acc_r_181.h5
 
 import torch
@@ -16,32 +18,34 @@ parser = argparse.ArgumentParser(description='Required args: --cuda|--cpu and --
 parser.add_argument('--weights', type=str,
                     help='weights [weights_filename]')
 parser.add_argument('--cuda', action='store_true',
-                    help='--cuda 1 if the gpu should be used')
+                    help='--cuda if the gpu should be used')
 args = parser.parse_args()
-# print(args.cuda)
 
-# Hyperparams
-episodes = 5
-weights_filename = os.listdir('weights')[len(os.listdir('weights'))-1]
-if args.weights:
-    weights_filename = args.weights
-
-# Environment setup
+# hyperparams
 env_name = 'LunarLander-v2'
+episodes = 5
+
+# environment setup
 print(f'Showing a trained agent in the {env_name} environment.')
-env = gym.make(env_name, new_step_api=True, render_mode='human')
+env = gym.make(env_name, render_mode='human') #new_step_api=True,
 obs_shape = env.observation_space.shape[0]
 action_shape = env.action_space.n
 
-# Init agent
+# load weights
+if args.weights:
+    weights_filename = args.weights
+else:
+    weights_filename = os.listdir('weights')[len(os.listdir('weights'))-1]
+    
+# init agent
 agent = ReinforceAgent(n_features=obs_shape, n_actions=action_shape, device='cpu', lr=0)
 agent.load_params(weights_filename)
 
-# Showcase loop
+# showcase loop
 for episode in range(episodes):
     acc_reward = 0.0
     # get a trajectory from the trained policy
-    obs = env.reset()
+    obs, _ = env.reset()
     for step in range(250):
         action, action_log_likelihood = agent.get_action(obs[None, :])
         obs, reward, done, truncated, info = env.step(action)

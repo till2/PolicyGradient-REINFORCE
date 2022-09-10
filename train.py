@@ -1,51 +1,63 @@
-# PG-Reinforce training
+# Policy-Gradient RL
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import gym
+import argparse
 import wandb
 import os
 from agent import ReinforceAgent
-# add argparser
+
+# init parser
+parser = argparse.ArgumentParser(description='Required args: --cuda|--cpu and --weights=filename')
+parser.add_argument('--weights', type=str,
+                    help='weights [weights_filename]')
+parser.add_argument('--cuda', action='store_true',
+                    help='--cuda if the gpu should be used')
+parser.add_argument('--wandb', action='store_true',
+                    help='--wandb to log the run')
+args = parser.parse_args()
 
 # hyperparams
-use_wandb = 1
-episodes = 100_000
+env_name = 'LunarLander-v2'
+episodes = 1_000
 gamma = 0.99
 lr = 0.0001
 
 # environment setup
-env_name = 'LunarLander-v2'
 print(f'Training in the {env_name} environment.')
-env = gym.make(env_name, new_step_api=True)
+env = gym.make(env_name) # new_step_api=True
 obs_shape = env.observation_space.shape[0]
 action_shape = env.action_space.n
 
-#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = 'cpu'
+device = torch.device('cuda' if args.cuda and torch.cuda.is_available() else 'cpu')
 print(f'using device: {device}')
 
-# wandb Setup
-if use_wandb:
-    wandb.init(project='REINFORCE-CartPoleV1')
+# wandb setup
+if args.wandb:
+    wandb.init(project='PG-methods')
 
-# init Agent
+# init agent
 agent = ReinforceAgent(n_features=obs_shape, n_actions=action_shape, device=device, lr=lr)
 print(agent)
-weights_filename = 'LunarLander-v2_ReinforceAgent_episode_29400_acc_r_-74.h5'
-agent.load_params(weights_filename)
-agent.policy_net.train()
+
+# load pretrained weights
+if args.weights:
+    weights_filename = args.weights
+    agent.load_params(weights_filename)
+    agent.policy_net.train()
 
 # training loop
 for episode in range(episodes):
+    print(episode)
     
     rewards = []
     action_log_likelihoods = []
     
     # get a trajectory from the current policy
-    obs = env.reset()
+    obs, _ = env.reset()
     for step in range(500):
         action, action_log_likelihood = agent.get_action(obs[None, :])
         obs, reward, done, truncated, info = env.step(action)
@@ -55,11 +67,11 @@ for episode in range(episodes):
             break
     
     # calculate loss and update policy net params
-    loss = agent.get_loss(rewards, action_log_likelihoods, gamma)
+    loss = agent.get_loss(rewards, action_log_likelihoods, gamma, device)
     agent.update_policy_net(loss)
     
     # logging
-    if use_wandb:
+    if args.wandb:
         wandb.log({
             'accumulated_reward': sum(rewards),
             'loss': loss,
