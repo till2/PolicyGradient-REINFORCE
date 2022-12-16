@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import optim
 import numpy as np
 import os
 
@@ -22,13 +23,13 @@ class ReinforceAgent(nn.Module):
             nn.Linear(64, n_actions),
         ]
         self.policy_net = nn.Sequential(*layers).to(self.device)
-        self.optim = torch.optim.Adam(self.policy_net.parameters(), lr=lr)
+        self.optimizer = optim.Adam(self.policy_net.parameters(), lr=lr)
     
     def forward(self, x):
         x = self.policy_net(torch.Tensor(x).to(self.device))
         return x
     
-    def get_action(self, x):
+    def select_action(self, x):
         """
         Returns a tuple of the chosen action and the log-prob of that action.
         """
@@ -55,14 +56,14 @@ class ReinforceAgent(nn.Module):
         loss = torch.sum(loss)
         return loss
     
-    def update_policy_net(self, loss):
+    def update_params(self, loss):
         """
         Updates the parameters of the policy network according to the given loss.
         """
-        self.optim.zero_grad()
+        self.optimizer.zero_grad()
         loss.backward()
         # torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), 1) # clip gradient
-        self.optim.step()
+        self.optimizer.step()
     
     def save_params(self, env_name=None, episode=None, acc_reward=None):
         """

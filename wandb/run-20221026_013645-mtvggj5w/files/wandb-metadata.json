@@ -1,0 +1,26 @@
+{
+    "os": "Linux-5.15.0-47-generic-x86_64-with-glibc2.35",
+    "python": "3.10.4",
+    "heartbeatAt": "2022-10-25T23:36:46.066933",
+    "startedAt": "2022-10-25T23:36:45.228842",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090 Ti",
+    "gpu_count": 1,
+    "cpu_count": 24,
+    "cuda": null,
+    "args": [
+        "--wandb"
+    ],
+    "state": "running",
+    "program": "/home/till/Desktop/GitHub/PolicyGradient-REINFORCE/train_actor_critic.py",
+    "codePath": "train_actor_critic.py",
+    "git": {
+        "remote": "https://github.com/till2/policy-gradient-methods.git",
+        "commit": "51f8090dcde45c0ff1de49b09effc609e39643fd"
+    },
+    "email": "89709351+till2@users.noreply.github.com",
+    "root": "/home/till/Desktop/GitHub/PolicyGradient-REINFORCE",
+    "host": "z",
+    "username": "till",
+    "executable": "/usr/bin/python3.10"
+}

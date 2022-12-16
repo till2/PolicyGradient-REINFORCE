@@ -23,9 +23,9 @@ args = parser.parse_args()
 
 # hyperparams
 env_name = 'LunarLander-v2'
-episodes = 1_000
+episodes = 30000
 gamma = 0.99
-lr = 0.0001
+lr = 1e-3
 
 # environment setup
 print(f'Training in the {env_name} environment.')
@@ -41,34 +41,36 @@ if args.wandb:
     wandb.init(project='PG-methods')
 
 # init agent
-agent = ReinforceAgent(n_features=obs_shape, n_actions=action_shape, device=device, lr=lr)
+agent = ActorCriticAgent(n_features=obs_shape, n_actions=action_shape, device=device, lr=lr)
 print(agent)
 
 # load pretrained weights
 if args.weights:
     weights_filename = args.weights
     agent.load_params(weights_filename)
-    agent.policy_net.train()
+    agent.train()
 
 # training loop
 for episode in range(episodes):
-    print(episode)
+    # print(episode)
     
     rewards = []
     action_log_likelihoods = []
+    action_values = []
     
     # get a trajectory from the current policy
     obs, _ = env.reset()
     for step in range(500):
-        action, action_log_likelihood = agent.select_action(obs[None, :])
+        action, action_log_likelihood, action_value = agent.select_action(obs[None, :])
         obs, reward, done, truncated, info = env.step(action)
         action_log_likelihoods.append(action_log_likelihood)
+        action_values.append(action_value)
         rewards.append(reward)
         if done or truncated:
             break
     
-    # calculate loss and update policy net params
-    loss = agent.get_loss(rewards, action_log_likelihoods, gamma, device)
+    # calculate loss and update params
+    loss = agent.get_loss(rewards, action_log_likelihoods, action_values, gamma, device)
     agent.update_params(loss)
     
     # logging
@@ -80,8 +82,10 @@ for episode in range(episodes):
         })
     
     # save the trained weights
-    if (episode%100 == 0) and sum(rewards) > -100:
+    if (episode%100 == 0) and sum(rewards) > 100:
         print(f'saving model: episode {episode} with acc_reward={sum(rewards)}')
         agent.save_params(env_name=env_name, episode=episode, acc_reward=sum(rewards))
-    
+
+
+del rewards, action_log_likelihoods, action_values
 env.close()

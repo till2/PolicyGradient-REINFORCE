@@ -11,7 +11,8 @@ import gym
 import argparse
 import wandb
 import os
-from agent import ReinforceAgent
+from reinforce_agent import ReinforceAgent
+from actor_critic_agent import ActorCriticAgent
 
 # Init parser
 parser = argparse.ArgumentParser(description='Required args: --cuda|--cpu and --weights=filename')
@@ -38,7 +39,7 @@ else:
     weights_filename = os.listdir('weights')[len(os.listdir('weights'))-1]
     
 # init agent
-agent = ReinforceAgent(n_features=obs_shape, n_actions=action_shape, device='cpu', lr=0)
+agent = ActorCriticAgent(n_features=obs_shape, n_actions=action_shape, device='cpu', lr=0)
 agent.load_params(weights_filename)
 
 # showcase loop
