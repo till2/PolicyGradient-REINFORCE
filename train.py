@@ -8,10 +8,10 @@ import gym
 import argparse
 import wandb
 import os
-from reinforce_agent import ReinforceAgent
-from actor_critic_agent import ActorCriticAgent
+from reinforce import REINFORCE
+from actor_critic import ActorCritic
 
-# init parser
+# parse optional arguments
 parser = argparse.ArgumentParser(description='Required args: --cuda|--cpu and --weights=filename')
 parser.add_argument('--weights', type=str,
                     help='weights [weights_filename]')
@@ -28,7 +28,6 @@ gamma = 0.99
 lr = 0.0001
 
 # environment setup
-print(f'Training in the {env_name} environment.')
 env = gym.make(env_name) # new_step_api=True
 obs_shape = env.observation_space.shape[0]
 action_shape = env.action_space.n
@@ -41,14 +40,15 @@ if args.wandb:
     wandb.init(project='PG-methods')
 
 # init agent
-agent = ReinforceAgent(n_features=obs_shape, n_actions=action_shape, device=device, lr=lr)
+agent = ActorCritic(n_features=obs_shape, n_actions=action_shape, device=device, lr=lr)
+print(f'Training {agent.__class__.__name__} in the {env_name} environment...')
 print(agent)
 
 # load pretrained weights
-if args.weights:
-    weights_filename = args.weights
-    agent.load_params(weights_filename)
-    agent.policy_net.train()
+#if args.weights:
+#    weights_filename = args.weights
+#    agent.load_params(weights_filename)
+#    agent.policy_net.train()
 
 # training loop
 for episode in range(episodes):
@@ -80,8 +80,8 @@ for episode in range(episodes):
         })
     
     # save the trained weights
-    if (episode%100 == 0) and sum(rewards) > -100:
-        print(f'saving model: episode {episode} with acc_reward={sum(rewards)}')
-        agent.save_params(env_name=env_name, episode=episode, acc_reward=sum(rewards))
+    #if (episode%100 == 0) and sum(rewards) > -100:
+    #    print(f'saving model: episode {episode} with acc_reward={sum(rewards)}')
+    #    agent.save_params(env_name=env_name, episode=episode, acc_reward=sum(rewards))
     
 env.close()

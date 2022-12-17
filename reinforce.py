@@ -5,8 +5,7 @@ from torch import optim
 import numpy as np
 import os
 
-# PG-Reinforce Agent
-class ReinforceAgent(nn.Module):
+class REINFORCE(nn.Module):
 
     def __init__(self, n_features, n_actions, device, lr):
         self.device=device

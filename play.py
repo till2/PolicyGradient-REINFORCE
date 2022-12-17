@@ -1,4 +1,4 @@
-# PG showcase
+# file for showcasing the agent by playing a couple of live episodes
 
 # To play:
 # python play.py --weights LunarLander-v2_ReinforceAgent_episode_46100_acc_r_181.h5
@@ -39,7 +39,8 @@ else:
     weights_filename = os.listdir('weights')[len(os.listdir('weights'))-1]
     
 # init agent
-agent = ActorCriticAgent(n_features=obs_shape, n_actions=action_shape, device='cpu', lr=0)
+# agent = ActorCriticAgent(n_features=obs_shape, n_actions=action_shape, device='cpu', lr=0)
+agent = ReinforceAgent(n_features=obs_shape, n_actions=action_shape, device='cpu', lr=0)
 agent.load_params(weights_filename)
 
 # showcase loop
