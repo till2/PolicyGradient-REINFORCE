@@ -13,6 +13,9 @@
 
 ![lunar_lander_plots](https://user-images.githubusercontent.com/89709351/188278759-217c8906-a414-47e3-aa47-77dbe6bef9e8.png) Training Policy Gradient on the LunarLander-v2 environment.
 
+![actor_critic_lunarlander_v2](https://user-images.githubusercontent.com/89709351/209468976-5ae12ffe-3920-4dfc-8e3b-8b6201fdd1e5.png)
+Actor Critic plots for the LunarLander-v2 environment.
+
 <details>
   <summary>Architectures (Click to expand)</summary>
   
